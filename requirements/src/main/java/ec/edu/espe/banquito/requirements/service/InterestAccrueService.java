@@ -31,20 +31,20 @@ public class InterestAccrueService {
     }
 
     public List<InterestAccrueRS> getAllInterestAccrue() {
-        List<InterestAccrue> assets = this.interestAccrueRepository.findAll();
-        List<InterestAccrueRS> assetsList = new ArrayList<>();
-        for (InterestAccrue asset : assets) {
-            assetsList.add(this.transformInterestAccrue(asset));
+        List<InterestAccrue> interests = this.interestAccrueRepository.findAll();
+        List<InterestAccrueRS> interestsList = new ArrayList<>();
+        for (InterestAccrue interest : interests) {
+            interestsList.add(this.transformInterestAccrue(interest));
         }
-        return assetsList;
+        return interestsList;
     }
 
     @Transactional
-    public InterestAccrueRS createInterest(InterestAccrueRQ assetRQ) {
+    public InterestAccrueRS createInterest(InterestAccrueRQ interestRQ) {
         try {
-            InterestAccrue asset = this.transformInterestAccrueRQ(assetRQ);
-            this.interestAccrueRepository.save(asset);
-            return this.transformInterestAccrue(asset);
+            InterestAccrue interest = this.transformInterestAccrueRQ(interestRQ);
+            this.interestAccrueRepository.save(interest);
+            return this.transformInterestAccrue(interest);
         } catch (RuntimeException rte) {
             throw new RuntimeException("Error al crear el interés: " + rte.getMessage(), rte);
         }
@@ -53,21 +53,21 @@ public class InterestAccrueService {
     @Transactional
     public InterestAccrueRS updateInterest(InterestAccrueUpdateRQ rq) {
 
-        Optional<InterestAccrue> assetOpt = this.interestAccrueRepository.findById(rq.getId());
+        Optional<InterestAccrue> interestOpt = this.interestAccrueRepository.findById(rq.getId());
 
-        if (assetOpt.isPresent()) {
-            InterestAccrue assetTmp = assetOpt.get();
+        if (interestOpt.isPresent()) {
+            InterestAccrue interestTmp = interestOpt.get();
 
-            InterestAccrue asset = this.transformOfAssetUpdateRQ(rq);
+            InterestAccrue interest = this.transformOfInterestUpdateRQ(rq);
 
-            assetTmp.setInterestRate(asset.getInterestRate());
-            assetTmp.setInterestType(asset.getInterestType());
-            assetTmp.setSpread(asset.getSpread());
-            assetTmp.setChargeFrecuency(asset.getChargeFrecuency());
+            interestTmp.setInterestRate(interest.getInterestRate());
+            interestTmp.setInterestType(interest.getInterestType());
+            interestTmp.setSpread(interest.getSpread());
+            interestTmp.setChargeFrecuency(interest.getChargeFrecuency());
 
-            this.interestAccrueRepository.save(assetTmp);
+            this.interestAccrueRepository.save(interestTmp);
 
-            return this.transformInterestAccrue(asset);
+            return this.transformInterestAccrue(interest);
         } else {
             throw new RuntimeException("Acumulación de intereses no encontrado");
         }
@@ -87,6 +87,25 @@ public class InterestAccrueService {
         }
     }
 
+    @Transactional
+    public InterestAccrueRS logicDelete(Integer id) {
+        try {
+            Optional<InterestAccrue> interestLogicDeleteOpt = this.interestAccrueRepository.findById(id);
+            if (interestLogicDeleteOpt.isPresent()) {
+                InterestAccrue interestTmp = interestLogicDeleteOpt.get();
+
+                interestTmp.setStatus("INA");
+                this.interestAccrueRepository.save(interestTmp);
+                return this.transformInterestAccrue(interestTmp);
+
+            } else {
+                throw new RuntimeException("Interés no encontrado: " + id);
+            }
+        } catch (RuntimeException rte) {
+            throw new RuntimeException("Interés no encontrado y no puede ser eliminado: " + id, rte);
+        }
+    }
+
     private InterestAccrue transformInterestAccrueRQ(InterestAccrueRQ rq) {
         InterestAccrue branch = InterestAccrue
                 .builder()
@@ -98,19 +117,19 @@ public class InterestAccrueService {
         return branch;
     }
 
-    private InterestAccrueRS transformInterestAccrue(InterestAccrue asset) {
-        InterestAccrueRS assetRS = InterestAccrueRS
+    private InterestAccrueRS transformInterestAccrue(InterestAccrue interest) {
+        InterestAccrueRS interestRS = InterestAccrueRS
                 .builder()
-                .id(asset.getId())
-                .interestRate(asset.getInterestRate())
-                .interestType(asset.getInterestType())
-                .spread(asset.getSpread())
-                .chargeFrecuency(asset.getChargeFrecuency())
+                .id(interest.getId())
+                .interestRate(interest.getInterestRate())
+                .interestType(interest.getInterestType())
+                .spread(interest.getSpread())
+                .chargeFrecuency(interest.getChargeFrecuency())
                 .build();
-        return assetRS;
+        return interestRS;
     }
 
-    private InterestAccrue transformOfAssetUpdateRQ(InterestAccrueUpdateRQ rq) {
+    private InterestAccrue transformOfInterestUpdateRQ(InterestAccrueUpdateRQ rq) {
         InterestAccrue branch = InterestAccrue
                 .builder()
                 .id(rq.getId())

@@ -87,7 +87,25 @@ public class AssetService {
         }
     }
 
-    
+    @Transactional
+    public AssetRS logicDelete(Integer id) {
+        try {
+            Optional<Asset> assetLogicDeleteOpt = this.assetRepository.findById(id);
+            if (assetLogicDeleteOpt.isPresent()) {
+
+                Asset assetTmp = assetLogicDeleteOpt.get();
+                assetTmp.setStatus("INA");
+                this.assetRepository.save(assetTmp);
+
+                return this.transformAsset(assetTmp);
+
+            } else {
+                throw new RuntimeException("Activo no encontrado: " + id);
+            }
+        } catch (RuntimeException rte) {
+            throw new RuntimeException("Activo no encontrado y no se puede eliminar: " + id, rte);
+        }
+    }
 
     private AssetRS transformAsset(Asset asset) {
         AssetRS assetRS = AssetRS

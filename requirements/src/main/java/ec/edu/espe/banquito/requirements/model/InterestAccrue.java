@@ -39,6 +39,9 @@ public class InterestAccrue {
     @Column(name = "CHARGE_FRECUENCY", length = 10)
     private String chargeFrecuency;
 
+    @Column(name = "STATUS", length = 3)
+    private String status;
+
     @Version
     @Column(name = "VERSION", nullable = false)
     private Long version;

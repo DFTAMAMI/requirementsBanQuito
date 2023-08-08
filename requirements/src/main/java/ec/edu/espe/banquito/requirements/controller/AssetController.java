@@ -64,13 +64,23 @@ public class AssetController {
         }
     }
 
+    // @DeleteMapping("/{assetId}")
+    // public ResponseEntity<String> deleteAsset(@PathVariable Integer assetId) {
+    //     try {
+    //         this.assetService.deleteAsset(assetId);
+    //         return ResponseEntity.ok("Activo eliminado correctamente");
+    //     } catch (RuntimeException rte) {
+    //         return ResponseEntity.badRequest().body("No se pudo eliminar el activo: " + rte.getMessage());
+    //     }
+    // }
+
     @DeleteMapping("/{assetId}")
-    public ResponseEntity<String> deleteAsset(@PathVariable Integer assetId) {
-        try {
-            this.assetService.deleteAsset(assetId);
-            return ResponseEntity.ok("Activo eliminado correctamente");
-        } catch (RuntimeException rte) {
-            return ResponseEntity.badRequest().body("No se pudo eliminar el activo: " + rte.getMessage());
+    public ResponseEntity<AssetRS> delete(@PathVariable Integer assetId) {
+        try{
+            AssetRS rs = this.assetService.logicDelete(assetId);
+            return ResponseEntity.ok().body(rs);
+        }catch (RuntimeException rte){
+            throw new RuntimeException("Activo no encontrado y no puede ser eliminado: " + assetId, rte);
         }
     }
 }

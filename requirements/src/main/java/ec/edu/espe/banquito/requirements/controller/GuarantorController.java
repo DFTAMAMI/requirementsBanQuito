@@ -60,9 +60,9 @@ public class GuarantorController {
     }
 
     @PostMapping
-    public ResponseEntity<?> createGuarantor(@RequestBody GuarantorRQ assetRQ) {
+    public ResponseEntity<?> createGuarantor(@RequestBody GuarantorRQ guarantorRQ) {
         try {
-            return ResponseEntity.ok(this.guarantorService.createGuarantor(assetRQ));
+            return ResponseEntity.ok(this.guarantorService.createGuarantor(guarantorRQ));
         } catch (RuntimeException rte) {
             return ResponseEntity.badRequest().body(rte.getMessage());
         } catch (Exception e) {
@@ -80,13 +80,23 @@ public class GuarantorController {
         }
     }
 
-    @DeleteMapping("/{guarantorId}")
-    public ResponseEntity<String> deleteGuarantor(@PathVariable Integer guarantorId) {
-        try {
-            guarantorService.delete(guarantorId);
-            return ResponseEntity.ok("Garante eliminado exitosamente.");
-        } catch (RuntimeException rte) {
-            return ResponseEntity.badRequest().body("No se pudo eliminar el garante: " + rte.getMessage());
+    // @DeleteMapping("/{guarantorId}")
+    // public ResponseEntity<String> deleteGuarantor(@PathVariable Integer guarantorId) {
+    //     try {
+    //         guarantorService.delete(guarantorId);
+    //         return ResponseEntity.ok("Garante eliminado exitosamente.");
+    //     } catch (RuntimeException rte) {
+    //         return ResponseEntity.badRequest().body("No se pudo eliminar el garante: " + rte.getMessage());
+    //     }
+    // }
+
+    @DeleteMapping("/{guarantorCode}")
+    public ResponseEntity<GuarantorRS> delete(@PathVariable String guarantorCode) {
+        try{
+            GuarantorRS rs = this.guarantorService.logicDelete(guarantorCode);
+            return ResponseEntity.ok().body(rs);
+        }catch (RuntimeException rte){
+            throw new RuntimeException("Garante no encontrado y no puede ser eliminado: " + guarantorCode, rte);
         }
     }
 

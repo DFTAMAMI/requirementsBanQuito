@@ -41,11 +41,11 @@ public class GuarantorService {
     }
 
     @Transactional
-    public GuarantorRS createGuarantor(GuarantorRQ assetRQ) {
+    public GuarantorRS createGuarantor(GuarantorRQ guarantorRQ) {
         try {
-            Guarantor asset = this.transformGuarantorRQ(assetRQ);
-            this.guarantorRepository.save(asset);
-            return this.transformGuarantor(asset);
+            Guarantor guarantor = this.transformGuarantorRQ(guarantorRQ);
+            this.guarantorRepository.save(guarantor);
+            return this.transformGuarantor(guarantor);
         } catch (RuntimeException rte) {
             throw new RuntimeException("Error al crear el garante: " + rte.getMessage(), rte);
         }
@@ -83,6 +83,22 @@ public class GuarantorService {
             }
         } catch (RuntimeException rte) {
             throw new RuntimeException("No se puede eliminar el garante con código: " + id, rte);
+        }
+    }
+
+    @Transactional
+    public GuarantorRS logicDelete(String code){
+        try {
+            Guarantor countryLogicDelete = this.guarantorRepository.findByCode(code);
+            if(countryLogicDelete != null) {
+                countryLogicDelete.setStatus("INA");
+                this.guarantorRepository.save(countryLogicDelete);
+                return this.transformGuarantor(countryLogicDelete);
+            }else {
+                throw new RuntimeException("Garante no encontrado: " + code);
+            }
+        } catch (RuntimeException rte) {
+            throw new RuntimeException("Garante no encontrado y no puede ser eliminado: " + code, rte);
         }
     }
 

@@ -32,20 +32,20 @@ public class InterestAccrueController {
 
     @GetMapping
     public ResponseEntity<List<InterestAccrueRS>> getAll() {
-        List<InterestAccrueRS> assets = this.interestService.getAllInterestAccrue();
-        return ResponseEntity.ok(assets);
+        List<InterestAccrueRS> interests = this.interestService.getAllInterestAccrue();
+        return ResponseEntity.ok(interests);
     }
 
-    @GetMapping("/{assetId}")
-    public ResponseEntity<InterestAccrueRS> obtain(@PathVariable Integer assetId) {
-        InterestAccrueRS rs = this.interestService.obtain(assetId);
+    @GetMapping("/{interestId}")
+    public ResponseEntity<InterestAccrueRS> obtain(@PathVariable Integer interestId) {
+        InterestAccrueRS rs = this.interestService.obtain(interestId);
         return ResponseEntity.ok(rs);
     }
 
     @PostMapping
-    public ResponseEntity<?> createAsset(@RequestBody InterestAccrueRQ assetRQ) {
+    public ResponseEntity<?> createInterest(@RequestBody InterestAccrueRQ interestRQ) {
         try {
-            return ResponseEntity.ok(this.interestService.createInterest(assetRQ));
+            return ResponseEntity.ok(this.interestService.createInterest(interestRQ));
         } catch (RuntimeException rte) {
             return ResponseEntity.badRequest().body(rte.getMessage());
         } catch (Exception e) {
@@ -54,9 +54,9 @@ public class InterestAccrueController {
     }
 
     @PutMapping
-    public ResponseEntity<?> update(@RequestBody InterestAccrueUpdateRQ asset) {
+    public ResponseEntity<?> update(@RequestBody InterestAccrueUpdateRQ interestRQ) {
         try {
-            return ResponseEntity.ok(this.interestService.updateInterest(asset));
+            return ResponseEntity.ok(this.interestService.updateInterest(interestRQ));
         } catch (RuntimeException rte) {
             return ResponseEntity.badRequest().body(rte.getMessage());
         } catch (Exception e) {
@@ -64,13 +64,23 @@ public class InterestAccrueController {
         }
     }
 
+    // @DeleteMapping("/{interestId}")
+    // public ResponseEntity<String> deleteInterestAccrue(@PathVariable Integer interestId) {
+    //     try {
+    //         this.interestService.deleteInterest(interestId);
+    //         return ResponseEntity.ok("Acumulación de intereses eliminado correctamente.");
+    //     } catch (RuntimeException rte) {
+    //         return ResponseEntity.badRequest().body("No se pudo eliminar el interés: " + rte.getMessage());
+    //     }
+    // }
+
     @DeleteMapping("/{interestId}")
-    public ResponseEntity<String> deleteInterestAccrue(@PathVariable Integer interestId) {
-        try {
-            this.interestService.deleteInterest(interestId);
-            return ResponseEntity.ok("Acumulación de intereses eliminado correctamente.");
-        } catch (RuntimeException rte) {
-            return ResponseEntity.badRequest().body("No se pudo eliminar el interés: " + rte.getMessage());
+    public ResponseEntity<InterestAccrueRS> delete(@PathVariable Integer interestId) {
+        try{
+            InterestAccrueRS rs = this.interestService.logicDelete(interestId);
+            return ResponseEntity.ok().body(rs);
+        }catch (RuntimeException rte){
+            throw new RuntimeException("Interés no encontrado y no puede ser eliminado: " + interestId, rte);
         }
     }
 }
