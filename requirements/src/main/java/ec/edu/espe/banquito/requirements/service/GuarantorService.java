@@ -23,11 +23,17 @@ public class GuarantorService {
 
     public GuarantorRS obtainByCode(String code) {
         Guarantor guarantor = this.guarantorRepository.findByCode(code);
+        if (guarantor == null) {
+            return null;
+        }
         return this.transformGuarantor(guarantor);
     }
 
     public GuarantorRS obtainByName(String nameGuarantor) {
         Guarantor guarantor = this.guarantorRepository.findByName(nameGuarantor);
+        if (guarantor == null) {
+            return null;
+        }
         return this.transformGuarantor(guarantor);
     }
 
@@ -87,14 +93,14 @@ public class GuarantorService {
     }
 
     @Transactional
-    public GuarantorRS logicDelete(String code){
+    public GuarantorRS logicDelete(String code) {
         try {
             Guarantor countryLogicDelete = this.guarantorRepository.findByCode(code);
-            if(countryLogicDelete != null) {
+            if (countryLogicDelete != null) {
                 countryLogicDelete.setStatus("INA");
                 this.guarantorRepository.save(countryLogicDelete);
                 return this.transformGuarantor(countryLogicDelete);
-            }else {
+            } else {
                 throw new RuntimeException("Garante no encontrado: " + code);
             }
         } catch (RuntimeException rte) {
